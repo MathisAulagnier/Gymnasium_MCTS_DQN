@@ -17,7 +17,7 @@ def play_game_with_mcts(env, mcts, episodes=1):
         total_reward = 0
         
         while not done:
-            action = mcts.get_best_action(state[0])  # state[0] contains the actual observation
+            action = mcts.get_best_action(state[0]) 
             state, reward, terminated, truncated, _ = env.step(action)
             total_reward += reward
             done = terminated or truncated
@@ -28,11 +28,15 @@ def play_game_with_mcts(env, mcts, episodes=1):
 gym.register_envs(ale_py)
 
 # Initialiser l'environnement
-environment_name = 'ALE/VideoChess-v5'
-env = gym.make(environment_name, render_mode='human')
+# environment_name = 'ALE/VideoChess-v5'
+environment_name = 'ALE/TicTacToe3D-v5'
+
+env = gym.make(environment_name, render_mode='human', obs_type = 'ram')
+env.metadata['render_fps'] = 60 
+
 
 # Créer l'instance MCTS
 mcts = MCTS(env)
 
 # Jouer quelques parties
-play_game_with_mcts(env, mcts, episodes=3)
+play_game_with_mcts(env, mcts, episodes=30)

@@ -4,9 +4,8 @@ import math
 
 from NODE import Node
 
-
 class MCTS:
-    def __init__(self, env, exploration_weight=1.41):
+    def __init__(self, env, exploration_weight=math.sqrt(2)):
         self.env = env
         self.exploration_weight = exploration_weight
         
@@ -39,7 +38,8 @@ class MCTS:
         node.children.append(child_node)
         
         return child_node
-        
+
+
     def rollout(self, node):
         """Simulate a random game from the node's state"""
         current_state = node.state
@@ -54,7 +54,8 @@ class MCTS:
             current_state = observation
             
         return total_reward
-    
+
+
     def backpropagate(self, node, reward):
         """Update node statistics going up the tree"""
         while node is not None:
