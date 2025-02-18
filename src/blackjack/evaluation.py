@@ -8,7 +8,7 @@ import gymnasium as gym
 import numpy as np
 from tqdm import tqdm
 
-from blackjack.agent import BlackjackAgent
+from Blackjack.agent import BlackjackAgent
 
 # hyperparameters
 learning_rate = 0.001
