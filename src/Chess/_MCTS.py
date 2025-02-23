@@ -2,6 +2,8 @@ import chess
 import random
 import math
 
+from Chess._Node import Node
+
 class MCTS:
     def __init__(self, simulations=1000):
         self.simulations = simulations
