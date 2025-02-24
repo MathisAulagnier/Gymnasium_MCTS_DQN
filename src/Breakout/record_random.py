@@ -1,8 +1,4 @@
 import gymnasium as gym
-from stable_baselines3 import A2C
-from stable_baselines3.common.vec_env import VecFrameStack
-from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3.common.env_util import make_atari_env
 import os
 import ale_py 
 
@@ -40,29 +36,3 @@ print(f'Episode lengths: {env_video_random.length_queue}')
 print('____________________________________')
 
 env_video_random.close()
-
-# Chargement du modèle entraîné
-env_trained = gym.make(environment_name, render_mode='rgb_array', obs_type="ram")
-env_video_trained = RecordVideo(env_trained, video_folder=video_path, name_prefix="trained_model",
-                                episode_trigger=lambda x: True)
-
-model_trn = A2C.load(a2c_path, env_trained)
-
-# Enregistrement vidéo avec le modèle entraîné
-for episode_num in range(num_eval_episodes + 3):
-    obs, info = env_video_trained.reset()
-
-    episode_over = False
-    while not episode_over:
-        action, _states = model_trn.predict(obs)
-        obs, reward, terminated, truncated, info = env_video_trained.step(action)
-
-        episode_over = terminated or truncated
-
-print('___________Trained model____________')
-print(f'Episode time taken: {env_video_trained.time_queue}')
-print(f'Episode total rewards: {env_video_trained.return_queue}')
-print(f'Episode lengths: {env_video_trained.length_queue}')
-print('____________________________________')
-
-env_video_trained.close()
