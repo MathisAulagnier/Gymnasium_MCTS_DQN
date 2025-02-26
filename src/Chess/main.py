@@ -1,59 +1,80 @@
 import chess
-from Chess._Node import Node
 from Chess._MCTS import MCTS
+from Chess._Node import Node 
 import random
 
-
-
-# board = chess.Board() # Créer un échiquier
-# mcts = MCTS(simulations=1000) # Créer un objet MCTS
-# print(board.legal_moves)  # Afficher les coups légaux
-# best_move = mcts.best_move(board) # Trouver le meilleur coup grâce à MCTS
-# board.push(best_move) # Jouer le coup
-# user_move = chess.Move.from_uci("a7a5") # Créer un coup utilisateur
-# print(user_move in board.legal_moves) # Vérifier si le coup est légal
-
-# Créer une partie d'échecs contre l'utilisateur
-def main(player_color=random.choice([chess.WHITE, chess.BLACK])):
-    board = chess.Board()
-    mcts = MCTS(simulations=1000)
-
-    print("Bienvenue ! Vous jouez les Blancs. Entrez votre coup en notation UCI (ex: e2e4).")
-    print(board)
-
-    while not board.is_game_over():
-        # Tour du joueur
-        if board.turn == player_color:
-            move = None
-            while move not in board.legal_moves:
-                user_input = input("Votre coup (UCI ex: e2e4) : ")
-                try:
-                    move = chess.Move.from_uci(user_input)
-                    if move not in board.legal_moves:
-                        print("Coup illégal, réessayez.")
-                        print("Coups légaux (UCI) : ", [board.parse_san(str(move)) for move in board.legal_moves])
-                except ValueError:
-                    print("Format invalide, réessayez.")
-            board.push(move)
-        
-        # Tour de l'IA
+def print_tree(node, indent=0, max_depth=2):
+        """Affiche une partie de l'arbre jusqu'à max_depth niveaux."""
+        if indent > max_depth:
+            return
+        prefix = "  " * indent
+        if node.move:
+            move_str = node.move.uci()
         else:
-            print("\nL'ordinateur réfléchit...")
-            move = mcts.best_move(board)
-            board.push(move)
-            print(f"L'ordinateur joue : {move}")
+            move_str = "Root"
+        print(f"{prefix}{move_str} | Visits: {node.visits}, Wins: {node.wins:.2f}")
+        for child in node.children:
+            print_tree(child, indent + 1, max_depth)
 
-        # Affichage de l'échiquier après chaque coup
-        print(board)
 
-    # Fin du jeu
-    outcome = board.outcome()
-    if outcome.winner is None:
-        print("Partie nulle !")
-    elif outcome.winner == chess.WHITE:
-        print("Vous avez gagné ! 🎉")
+def main():
+    mcts = MCTS(simulations=1000)
+    
+    # Création d'un plateau global.
+    board = chess.Board()
+    
+    print("État initial de l'échiquier :")
+    print(board)
+    
+    # Construction de la racine pour MCTS à partir de ce plateau.
+    root = Node(board)
+    
+    print("\nLancement du MCTS...")
+    best_move_found, best_child = mcts.best_move(root)
+    print("\n✔ 1000 simulations effectuées.")
+    print(f"Meilleur coup trouvé par le MCTS : {best_move_found}")
+
+    print("\n🌳 Arbre partiel de recherche MCTS :")
+    # print_tree(root, max_depth=2)
+
+    
+    # Mise à jour DU PLATEAU global.
+    board.push(best_move_found)
+    
+    # Mise à jour de l'arbre en conservant le sous-arbre correspondant au coup joué.
+    if best_child is not None:
+        root = best_child
     else:
-        print("L'ordinateur a gagné... 😞")
+        root = Node(board.copy())
+    
+    print("\nNouvel état de l'échiquier après le coup du MCTS :")
+    print(board)
+    print(f"\n🔍 Nombre total de visites de la racine : {root.visits} (devrait être proche de 1000)")
+    
+    print("\n🔄 Simulation d'une partie contre un joueur aléatoire...\n")
+    # La partie se poursuit : MCTS joue pour les Blancs et l'adversaire aléatoire pour les Noirs.
+    while not board.is_game_over():
+        if board.turn == chess.WHITE:
+            move, _ = mcts.best_move(root)
+            # print_tree(root, max_depth=1)
+        else:
+            move = random.choice(list(board.legal_moves))
+        board.push(move)
+        
+        # Mise à jour de l'arbre : si le sous-arbre correspondant existe, on le récupère.
+        found = False
+        for child in root.children:
+            if child.move == move:
+                root = child
+                found = True
+                break
+        if not found:
+            root = Node(board.copy())
+        
+        print(board, "\n")
+    
+    print("\n🎉 Partie terminée ! Résultat :", board.outcome())
+
 
 if __name__ == "__main__":
     main()
