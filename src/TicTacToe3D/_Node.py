@@ -17,10 +17,9 @@ class Node:
         return max(self.children, key=lambda child: (child.value / (child.visits + 1e-6)) + exploration_weight * math.sqrt(math.log(self.visits + 1) / (child.visits + 1e-6)))
 
     def get_possible_actions(self):
-        # J'ai cassé un truc ici, plus aucune action n'est possible et je peux plus ctrl+z jusqu'a la version anterieure...
-        print(f"État actuel du jeu dans get_possible_actions: {self.state}")
+        #print(f"État actuel du jeu dans get_possible_actions: {self.state}")
         empty_cells = np.argwhere(self.state == 0)
-        print(f"Cases vides détectées: {empty_cells}")  # Afficher les cases vides trouvées
+        #print(f"Cases vides détectées: {empty_cells}")  # Afficher les cases vides trouvées
         possible_actions = [tuple(cell) for cell in empty_cells]
-        print(f"Actions possibles: {possible_actions}")
+        #print(f"Actions possibles: {possible_actions}")
         return possible_actions

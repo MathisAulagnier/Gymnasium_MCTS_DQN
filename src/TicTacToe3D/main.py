@@ -21,7 +21,7 @@ while not done and not truncated:
     print(f"\n Tour {step}")
 
     # L'IA utilise MCTS pour choisir la meilleure action
-    best_action = mcts.search(root) #long mais ca marche, mettre "best_action = random..." permet d'aller plus vite pour  tests
+    best_action = mcts.search(root) #long mais ca marche, mettre "best_action = random..." permet d'aller plus vite pour tests
 
     # Appliquer l'action choisie dans l'environnement
     observation, reward, done, truncated, info = env.step(best_action)

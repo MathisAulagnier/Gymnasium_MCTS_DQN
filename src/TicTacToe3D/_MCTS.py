@@ -3,20 +3,26 @@ import random
 import gymnasium as gym
 from _Node import Node
 
+def coords_to_index(x, y, z, size=4):
+    return x * (size ** 2) + y * size + z
+
 class MCTS:
     def __init__(self, env, iterations=1000):
         self.base_env = env
         self.iterations = iterations
 
-    def search(self, root):
-        # Sauvegarde de l'état actuel
-        state_snapshot = self.base_env.unwrapped.clone_state(include_rng=True)
+    def search(self, root):    
         # Cloner l’environnement pour éviter de modifier l’état réel
         sim_env = gym.make("ALE/TicTacToe3D-v5")  # Nouvelle instance propre
-        sim_env.reset()  # Obtenir un état initial
-        sim_env.unwrapped.restore_state(state_snapshot)
+        obs, _ = sim_env.reset()  # Obtenir un état initial
+
+        if isinstance(obs, np.ndarray):
+            root_state = obs  # Si Gymnasium retourne un état sous forme de tableau
+        else:
+            raise TypeError(f"L'état du jeu doit être un tableau NumPy, mais c'est {type(obs)}")
+
+        root = Node(root_state)  # Utiliser l'état sous forme de tableau
         
-        root = Node(sim_env)
         for _ in range(self.iterations):
             node = self.select(root, sim_env)
             child = self.expand(node, sim_env) or node
@@ -29,23 +35,23 @@ class MCTS:
         while node.children:
             node = node.best_child()
         return node
-
+    
     def expand(self, node, env):
         if not node.is_fully_expanded():
-            print("on est ici")
+            print("1")
             legal_moves = node.get_possible_actions()
-            #legal_moves = get_legal_moves(self.env, node.state)
-            #legal_moves = list(range(env.action_space.n))
             random.shuffle(legal_moves)  # Mélanger pour varier les choix
-            
+
             for move in legal_moves:
-                if not any(child.action == move for child in node.children):
-                    new_state, _, terminated, truncated, _ = env.step(move)
+                move_index = coords_to_index(*move)  # Convertir (x, y, z) en un index valide
+                move_index = move_index % env.action_space.n # pour rester dans les incides jouables, sinon le code casse
+                if not any(child.action == move_index for child in node.children):
+                    new_state, _, terminated, truncated, _ = env.step(move_index)  # Utiliser l'index
                     if not terminated and not truncated:
-                        child = Node(new_state, node, move)
+                        child = Node(new_state, node, move_index)  # Stocker l'index
                         node.children.append(child)
                         return child
-        print("on est la")
+        print("2")
         return None  # Aucun coup possible
 
     def simulate(self, node, env):
@@ -58,6 +64,10 @@ class MCTS:
             action = env.action_space.sample()
             state, reward, terminated, truncated, _ = env.step(action)
             total_reward += reward
+
+            if terminated and reward == 0:
+                #Ajout de récompense manuelle pour la victoire
+                total_reward += 1
 
         return total_reward  # Retourne la récompense finale # toujours 0 actuellement...
 
