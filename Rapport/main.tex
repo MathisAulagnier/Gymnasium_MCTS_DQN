@@ -135,7 +135,7 @@ Les jeux Atari présentent plusieurs avantages comme environnements de test : il
 
 \subsection{L'algorithme MCTS et autres approches de RL}
 
-\quad Le Monte Carlo Tree Search (MCTS) est une méthode puissante pour résoudre des problèmes de décision séquentiels, particulièrement efficace dans les jeux à somme nulle comme les échecs ou le go. Le MCTS construit un arbre de recherche asymétrique en privilégiant les branches les plus prometteuses, équilibrant exploration (découverte de nouvelles stratégies) et exploitation (utilisation des connaissances acquises).\\
+\quad Le Monte Carlo Tree Search (MCTS) est une méthode pour résoudre des problèmes de décision séquentiels, particulièrement efficace dans les jeux à somme nulle comme les échecs ou le go. Le MCTS construit un arbre de recherche asymétrique en privilégiant les branches les plus prometteuses, équilibrant exploration (découverte de nouvelles stratégies) et exploitation (utilisation des connaissances acquises).\\
 
 Au-delà du MCTS, plusieurs familles d'algorithmes coexistent dans le domaine du RL. Ces derniers peuvent être catégorisés  comme "on-policy" (apprennent de leur propre comportement) ou "off-policy" (apprennent d'un comportement différent, souvent plus exploratoire).\\
 
@@ -172,7 +172,7 @@ Notre agent utilise une stratégie epsilon-greedy pour équilibrer exploration (
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{1.png}
-        \caption{Politique lors des preniers épisodes}
+        \caption{Politique lors du premier épisode (0)}
     \end{figure}
 
     \subsubsection{Phase intermédiaire (vers 300 000 épisodes)}
@@ -231,36 +231,26 @@ Nous avons également exploré les différentes options de rendu (render modes) 
 
 \subsection{Utilisation de Stable-Baselines3}
 
-\quad Pour relever ce défi plus complexe, nous avons adopté Stable-Baselines3, une bibliothèque qui offre des implémentations optimisées d'algorithmes de reinforcement learning. Cette bibliothèque présente plusieurs avantages majeurs :
-\begin{itemize} 
-    \item Implémentations fiables et testées : Les algorithmes sont implémentés selon les standards académiques et testés rigoureusement.
-    \item Interface unifiée : Tous les algorithmes partagent une API commune, facilitant l'expérimentation avec différentes approches.
-    \item Intégration transparente avec Gymnasium : La bibliothèque est conçue pour fonctionner nativement avec les environnements Gymnasium.
-    \item Compatibilité avec TensorBoard : Permet de suivre et visualiser les métriques d'entraînement en temps réel.
-\end{itemize}
+\quad Pour relever ce défi plus complexe, nous avons adopté Stable-Baselines3, une bibliothèque qui offre des implémentations optimisées d'algorithmes de reinforcement learning.
 
 Pour notre agent Breakout, nous avons sélectionné l'algorithme A2C, une méthode qui combine les avantages des approches basées sur la valeur et celles basées sur la politique. A2C par une Architecture Double, avec un réseau "Actor" (acteur) qui détermine quelle action prendre dans un état donné et un réseau "Critic" (critique) qui évalue la valeur de l'état actuel, ainsi qu'avec une Fonction d'Avantage que l'algorithme utilise pour mesurer combien une action est meilleure que la moyenne des actions dans un état donné, ce qui réduit la variance lors de l'apprentissage.
 
 \subsection{Résultats et analyse des performances}
 
 \quad L'entraînement de notre agent sur l'environnement Breakout a montré une amélioration significative des performances :
-\begin{verbatim}
-```bash
-_____Randomly initialized model_____
-Mean reward: 1.5 +/- 0.6708203932499369
-____________________________________
-_____Trained model_____
-Mean reward: 14.8 +/- 5.114684741017769
-____________________________________
-```
-\end{verbatim}
-
-\clearpage
-
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.3\textwidth]{6.png}
-    \caption{Partie de Breakout}
+    \begin{minipage}{0.6\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{14.png}
+        \caption{Différences des performances}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}{0.2\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{6.png}
+        \caption{Partie de Breakout}
+    \end{minipage}
 \end{figure}
 
 Ces résultats démontrent que notre agent a appris à jouer au jeu de manière efficace, multipliant par presque 10 le score obtenu par un agent à politique aléatoire.
@@ -374,11 +364,7 @@ Le problème fondamental de cet environnement réside dans sa conception basée 
     \item Sélectionner une case
 \end{itemize}
 
-Cette interface présente deux inconvénients critiques pour le MCTS :
-\begin{itemize} 
-    \item Inefficacité des actions : La grande majorité des séquences d'actions ne produisent aucun changement valide dans l'état du jeu. L'agent doit d'abord sélectionner l'une de ses pièces (10/64 cases au début), puis naviguer correctement pour choisir une case de destination légale (environ 2/64 cases), ce qui représente une probabilité infime de succès par exploration aléatoire.
-    \item Absence de connaissance des règles : L'agent n'a aucune notion préalable des règles des échecs, ce qui rend presque impossible la découverte de mouvements légaux par simple exploration.
-\end{itemize}
+Cette interface présente deux obstacles majeurs à l'efficacité du MCTS. Tout d'abord, l'exploration des actions se révèle extrêmement inefficace, car la plupart des séquences générées ne modifient en rien l'état du jeu. L'agent doit d'abord sélectionner l'une de ses pièces, un choix initialement restreint à dix cases sur soixante-quatre, puis déterminer une case de destination légale, dont le nombre moyen avoisine deux sur soixante-quatre. La probabilité qu'une exploration aléatoire aboutisse à un mouvement valide est donc infime. De surcroît, l'agent ne dispose d'aucune connaissance préalable des règles du jeu, ce qui rend quasi impossible la découverte empirique des mouvements légaux par simple exploration.
 
 Ces limitations font que l'espace d'actions effectif est extrêmement dilué, rendant la convergence de l'algorithme MCTS pratiquement inatteignable dans un temps raisonnable.
 
@@ -391,17 +377,27 @@ Cette fonctionnalité est cruciale pour le MCTS, car elle permet de restreindre 
 Malgré cette amélioration significative de l'interface, notre agent d'échecs basé sur MCTS a continué à présenter des performances très faibles. Un examen approfondi de son comportement a révélé plusieurs problèmes :
 \begin{itemize} 
     \item Manque de discernement tactique : L'agent ne semblait pas reconnaître l'intérêt de capturer des pièces adverses. Ce comportement s'explique par le fait que notre implémentation initiale du MCTS ne considérait que les résultats finaux (victoire, défaite ou nulle) sans évaluation intermédiaire des positions.
-    \item Arbre d'exploration extrêmement clairsemé** : L'espace des états des échecs est astronomiquement vaste (environ 10\^{}123 parties raisonnables et plus de 10\^{}6000 parties théoriquement possibles). Dans un tel espace, l'exploration aléatoire a une probabilité infime de découvrir des séquences de coups tactiquement pertinentes.
+    \item Arbre d'exploration extrêmement clairsemé : L'espace des états des échecs est astronomiquement vaste (environ 10\^{}123 parties raisonnables et plus de 1e6000 parties théoriquement possibles). Dans un tel espace, l'exploration aléatoire a une probabilité infime de découvrir des séquences de coups tactiquement pertinentes.
 \end{itemize}
 
 Pour remédier au premier problème, nous avons tenté d'intégrer une heuristique simple d'évaluation matérielle dans notre processus de sélection de coups :
-\begin{itemize} 
-    \item Pion : 1 point
-    \item Cavalier/Fou : 3 points
-    \item Tour : 5 points
-    \item Dame : 9 points
-    \item Roi sans valeur car fin de partie
-\end{itemize}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Pièce} & \textbf{Valeur en points} \\
+        \hline
+        Pion & 1 \\
+        Cavalier & 3 \\
+        Fou & 3 \\
+        Tour & 5 \\
+        Dame & 9 \\
+        Roi & Sans valeur (fin de partie) \\
+        \hline
+    \end{tabular}
+    \caption{Valeur des pièces aux échecs}
+    \label{tab:valeur_pieces}
+\end{table}
 
 L'idée était de guider l'exploration vers des positions où l'agent dispose d'un avantage matériel. Cependant, cette approche n'a apporté qu'une amélioration marginale, rendant l'agent légèrement plus agressif mais toujours fondamentalement mauvais.\\
 
@@ -512,7 +508,7 @@ Cependant, l'application du DQN à des jeux comme les échecs ou les dames prés
     Métriques d'apprentissage :
     \begin{itemize} 
         \item \begin{verbatim}exploration_rate :\end{verbatim}Le taux d'exploration initial est bien de 1.0, puis diminue progressivement jusqu'à 0.01 à 500 000 pas de temps pour favoriser l'exploitation des connaissances acquises.
-        \item \begin{verbatim}learning_rate :\end{verbatim}Le taux d'apprentissage utilisé pour ce modèle est de 10\^{}-5. Il reste constant tout au long de l'entraînement.
+        \item \begin{verbatim}learning_rate :\end{verbatim}Le taux d'apprentissage utilisé pour ce modèle est de 1e-5. Il reste constant tout au long de l'entraînement.
         \item \begin{verbatim}loss :\end{verbatim}La perte oscille fortement alors qu'elle devrait diminuer progressivement, montrant que le critique s'améliore dans ses prédictions.
     \end{itemize}
 
