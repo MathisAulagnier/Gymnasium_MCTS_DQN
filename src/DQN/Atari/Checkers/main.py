@@ -58,7 +58,7 @@ model = DQN(
     exploration_fraction=0.1,  # Fraction de l'exploration
     exploration_initial_eps=1.0,  # Exploration initiale
     exploration_final_eps=0.01,  # Exploration finale
-    tensorboard_log=None  # Dossier pour les logs TensorBoard
+    tensorboard_log=log_path  # Dossier pour les logs TensorBoard
 )
 
 # Entraînement du modèle
