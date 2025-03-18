@@ -105,6 +105,8 @@
     Cours :  &  8INF974 – ATELIER PRATIQUE EN INTELLIGENCE ARTIFICIELLE II \\
 \end{tabular}
 
+\tableofcontents
+
 \clearpage
 
 \section{Introduction}
@@ -170,7 +172,7 @@ Notre agent utilise une stratégie epsilon-greedy pour équilibrer exploration (
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{1.png}
-        \caption{image a mettre ici}
+        \caption{Politique lors des preniers épisodes}
     \end{figure}
 
     \subsubsection{Phase intermédiaire (vers 300 000 épisodes)}
@@ -180,37 +182,27 @@ Notre agent utilise une stratégie epsilon-greedy pour équilibrer exploration (
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{2.png}
-        \caption{image a mettre ici}
+        \caption{Politique intermédiaire}
     \end{figure}
 
     \subsubsection{Phase finale}
     
-    \quad Après un million d'épisodes, la politique de l'agent a convergé vers une stratégie remarquablement similaire à la stratégie optimale du Blackjack. L'agent a clairement appris à :
-    \begin{itemize} 
-        \item Rester prudent (stick) avec des sommes élevées (17-21)
-        \item Adapter sa stratégie en fonction de la carte visible du croupier, prenant plus de risques quand le croupier a une carte forte (7-10, As)
-    \end{itemize}
-
-    \clearpage
+    \quad Après un million d'épisodes, la politique de l'agent a convergé vers une stratégie remarquablement similaire à la stratégie optimale du Blackjack. L'agent a clairement appris à rester prudent (stick) avec des sommes élevées (17-21) ainsi qu'à adapter sa stratégie en fonction de la carte visible du croupier, prenant plus de risques quand le croupier a une carte forte (7-10, As).
     
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{3.png}
-        \caption{image a mettre ici}
+        \caption{Politique finale}
     \end{figure}
 
 \subsection{Comparaison avec la stratégie optimale théorique}
 
-\quad La stratégie finale de notre agent correspond parfaitement à la stratégie optimale du Blackjack, compte tenu des règles spécifiques de cet environnement. Notre agent a correctement appris que :
-\begin{itemize} 
-    \item Il faut être plus conservateur avec des sommes élevées (17+)
-    \item Entre 12 et 16, la décision dépend fortement de la carte du croupier
-\end{itemize}
+\quad La stratégie finale de notre agent correspond parfaitement à la stratégie optimale du Blackjack, compte tenu des règles spécifiques de cet environnement. Notre agent a ainsi correctement appris à être plus conservateur avec des sommes élevées (17+) et que, entre 12 et 16, la décision dépend fortement de la carte du croupier
 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{4.png}
-    \caption{image a mettre ici}
+    \caption{Politique optimale}
 \end{figure}
 
 Cette correspondance avec la théorie optimale du Blackjack confirme l’efficacité de notre implémentation du Q-learning et nous a naturellement conduits à tester notre agent sur un jeu plus complexe : le Breakout.
@@ -226,13 +218,13 @@ Cette correspondance avec la théorie optimale du Blackjack confirme l’efficac
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{5.png}
-    \caption{image a mettre ici}
+    \caption{Analyse de l'environnement de Breakout}
 \end{figure}
 
-Ces informations nous indiquent que :
+Ces informations nous indiquent que l'agent :
 \begin{itemize} 
-    \item L'agent reçoit des observations sous forme de tableaux d'entiers (0-255) de dimension 128, représentant une version prétraitée de l'image du jeu.
-    \item L'agent peut effectuer 4 actions discrètes : ne rien faire, déplacer la raquette à gauche, déplacer la raquette à droite, ou lancer la balle.
+    \item Reçoit des observations sous forme de tableaux d'entiers (0-255) de dimension 128, représentant une version prétraitée de l'image du jeu.
+    \item Peut effectuer 4 actions discrètes : ne rien faire, déplacer la raquette à gauche, déplacer la raquette à droite, ou lancer la balle.
 \end{itemize}
 
 Nous avons également exploré les différentes options de rendu (render modes) disponibles dans Gymnasium, permettant de visualiser l'environnement de différentes manières : humain (affichage visuel), RGB (capture d'écran brute) ou ASCII (représentation textuelle).
@@ -247,11 +239,7 @@ Nous avons également exploré les différentes options de rendu (render modes) 
     \item Compatibilité avec TensorBoard : Permet de suivre et visualiser les métriques d'entraînement en temps réel.
 \end{itemize}
 
-Pour notre agent Breakout, nous avons sélectionné l'algorithme A2C, une méthode qui combine les avantages des approches basées sur la valeur et celles basées sur la politique. A2C fonctionne selon les principes suivants :
-\begin{itemize} 
-    \item Une Architecture Fouble avec un réseau "Actor" (acteur) qui détermine quelle action prendre dans un état donné et un réseau "Critic" (critique) qui évalue la valeur de l'état actuel.
-    \item Une Fonction d'Avantage : L'algorithme utilise une fonction d'avantage qui mesure combien une action est meilleure que la moyenne des actions dans un état donné, ce qui réduit la variance lors de l'apprentissage.
-\end{itemize}
+Pour notre agent Breakout, nous avons sélectionné l'algorithme A2C, une méthode qui combine les avantages des approches basées sur la valeur et celles basées sur la politique. A2C par une Architecture Double, avec un réseau "Actor" (acteur) qui détermine quelle action prendre dans un état donné et un réseau "Critic" (critique) qui évalue la valeur de l'état actuel, ainsi qu'avec une Fonction d'Avantage que l'algorithme utilise pour mesurer combien une action est meilleure que la moyenne des actions dans un état donné, ce qui réduit la variance lors de l'apprentissage.
 
 \subsection{Résultats et analyse des performances}
 
@@ -272,7 +260,7 @@ ____________________________________
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.3\textwidth]{6.png}
-    \caption{image a mettre ici}
+    \caption{Partie de Breakout}
 \end{figure}
 
 Ces résultats démontrent que notre agent a appris à jouer au jeu de manière efficace, multipliant par presque 10 le score obtenu par un agent à politique aléatoire.
@@ -291,7 +279,7 @@ Ces résultats démontrent que notre agent a appris à jouer au jeu de manière 
         \begin{figure}[ht]
             \centering
             \includegraphics[width=0.8\textwidth]{7.png}
-            \caption{image a mettre ici}
+            \caption{Métriques de performance}
         \end{figure}
     
         Métriques d'apprentissage
@@ -307,7 +295,7 @@ Ces résultats démontrent que notre agent a appris à jouer au jeu de manière 
         \begin{figure}[ht]
             \centering
             \includegraphics[width=0.8\textwidth]{8.png}
-            \caption{image a mettre ici}
+            \caption{Métriques d'apprentissage}
         \end{figure}
     
         Globalement, ces métriques révèlent un processus d'apprentissage sain, avec une convergence progressive vers une politique efficace. La stabilité des courbes dans les dernières phases de l'entraînement suggère que notre modèle  n’a pas atteint une performance proche de son potentiel optimal pour la durée d'entraînement allouée.\\
@@ -518,7 +506,7 @@ Cependant, l'application du DQN à des jeux comme les échecs ou les dames prés
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{10.png}
-        \caption{image a mettre ici}
+        \caption{Métriques de performance}
     \end{figure}
     
     Métriques d'apprentissage :
@@ -531,7 +519,7 @@ Cependant, l'application du DQN à des jeux comme les échecs ou les dames prés
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.8\textwidth]{11.png}
-        \caption{image a mettre ici}
+        \caption{Métriques d'apprentissage (1/2)}
     \end{figure}
 
     \clearpage
@@ -539,7 +527,7 @@ Cependant, l'application du DQN à des jeux comme les échecs ou les dames prés
     \begin{figure}[ht]
         \centering
         \includegraphics[width=0.5\textwidth]{12.png}
-        \caption{image a mettre ici}
+        \caption{Métriques d'apprentissage (2/2)}
     \end{figure}
 
     Interprétation des résultats :\\
@@ -548,7 +536,7 @@ Cependant, l'application du DQN à des jeux comme les échecs ou les dames prés
 
 \clearpage
 
-\section{Entraînement d'un Agent Ms. Pac-Man avec DQN}
+\subsection{Entraînement d'un Agent Ms. Pac-Man avec DQN}
 
 \quad Nous avons développé un agent capable de jouer à Ms. Pac-Man en utilisant un Deep Q-Network (DQN). Contrairement à l’approche MCTS utilisée pour les échecs, l’agent apprend ici à partir de zéro, uniquement par interaction avec l’environnement.\\
 
@@ -563,7 +551,7 @@ Après un million de pas d’entraînement, l’agent a montré une progression 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.9\textwidth]{13.png}
-    \caption{image a mettre ici}
+    \caption{Métriques de performance et d'éxploration}
 \end{figure}
 
 L’agent a développé plusieurs comportements intéressants. Il navigue efficacement dans le labyrinthe, évitant les impasses et optimisant son chemin vers les points. Il anticipe les mouvements des fantômes et ajuste sa trajectoire pour éviter les collisions. Il adopte une stratégie opportuniste en capturant les power-ups et en poursuivant les fantômes vulnérables.\\
@@ -582,5 +570,42 @@ Enfin, l'utilisation du DQN pour Ms. Pac-Man a démontré l'efficacité des rés
 Cependant, l'application du DQN à Chess-py a révélé des défis spécifiques. Contrairement aux jeux Atari, où les états sont représentés sous forme d'images, Chess-py fournit une représentation unidimensionnelle du plateau de jeu. Nous avons donc opté pour un Multi-Layer Perceptron (MLP) plutôt qu'un CNN, ce qui a permis de simplifier l'architecture du modèle tout en maintenant des performances satisfaisantes. Malgré cela, la gestion des coups légaux dans Chess-py a posé des problèmes, car l'espace d'actions doit être fixe pour être compatible avec Stable-Baselines3. Cela a conduit à une exploration inefficace, où l'agent passait beaucoup de temps à essayer des coups invalides, ralentissant ainsi l'apprentissage.\\
 
 Ces expériences nous ont permis de mieux comprendre les forces et les faiblesses des différentes approches de RL, tout en soulignant l'importance de l'adaptabilité des algorithmes aux spécificités de chaque environnement. Les défis rencontrés, notamment dans des jeux complexes comme les échecs, ouvrent la voie à des améliorations futures, telles que l'intégration de réseaux neuronaux profonds ou de connaissances expertes pour guider l'apprentissage.
+
+\begin{thebibliography}{9}
+
+\bibitem{StableBaselines}
+Stable-Baselines3 Documentation. \textit{Stable-Baselines3}, disponible en ligne :
+\url{https://stable-baselines.readthedocs.io/en/master/}.
+
+\bibitem{Gymnasium}
+Gymnasium Documentation. \textit{Farama Gymnasium}, disponible en ligne :
+\url{https://gymnasium.farama.org/}.
+
+\bibitem{ALE}
+Arcade Learning Environment. \textit{Farama ALE}, disponible en ligne :
+\url{https://ale.farama.org/}.
+
+\bibitem{BreakoutGitHub}
+Jack Furby. \textit{Breakout - Implementation on GitHub}, disponible en ligne :
+\url{https://github.com/JackFurby/Breakout/tree/master}.
+
+\bibitem{Blackjack}
+Blackjack (jeu). \textit{Wikipédia}, disponible en ligne :
+\url{https://fr.wikipedia.org/wiki/Blackjack_(jeu)}.
+
+\bibitem{YouTube}
+AlphaGo - The Movie. \textit{YouTube}, disponible en ligne :
+\url{https://www.youtube.com/watch?v=WXuK6gekU1Y}.
+
+\bibitem{Medium}
+Ishaan Gupta. Monte Carlo Tree Search - Application on Chess. \textit{Medium}, disponible en ligne :
+\url{https://medium.com/@ishaan.gupta0401/monte-carlo-tree-search-application-on-chess-5573fc0efb75}.
+
+\bibitem{Builtin}
+Monte Carlo Tree Search. \textit{Builtin}, disponible en ligne :
+\url{https://builtin.com/machine-learning/monte-carlo-tree-search}.
+
+\end{thebibliography}
+
 
 \end{document}
